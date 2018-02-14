@@ -96,13 +96,13 @@ public final class WebServerTest {
         System.out.println("-----------------------------------------------");
         System.out.println("Testing concurrent requests and content types");
         System.out.println("-----------------------------------------------");
-        HTTPRequest r1 = new HTTPRequest(host, port,
+        HTTPRequestTest r1 = new HTTPRequestTest(host, port,
                 Tests.HTTP_METHOD.GET, "/pic.jpg");
-        HTTPRequest r2 = new HTTPRequest(host, port,
+        HTTPRequestTest r2 = new HTTPRequestTest(host, port,
                 Tests.HTTP_METHOD.GET, "/pic.gif");
-        HTTPRequest r3 = new HTTPRequest(host, port,
+        HTTPRequestTest r3 = new HTTPRequestTest(host, port,
                 Tests.HTTP_METHOD.GET, "/pic.png");
-        HTTPRequest r4 = new HTTPRequest(host, port,
+        HTTPRequestTest r4 = new HTTPRequestTest(host, port,
                 Tests.HTTP_METHOD.GET, "/pic.bin");
 
         // Finishing the requests in the reverse order will
@@ -273,13 +273,13 @@ final class Tests {
     }
 }
 
-final class HTTPRequest {
+final class HTTPRequestTest {
     Socket socket;
     String request;
     DataOutputStream outs;
     BufferedReader br;
 
-    HTTPRequest(String host,
+    HTTPRequestTest(String host,
                 int port,
                 String method,
                 String resource) throws Exception {
