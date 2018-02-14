@@ -15,6 +15,7 @@ public class RequestManager {
             String argument = spaces[1];
             String version = spaces[2];
 
+
             if (spaces.length == HEADER_WITH_USER_AGENT) {
                 String userAgent = spaces[3];
                 if (!userAgent.equals(USER_AGENT)) {
@@ -22,30 +23,25 @@ public class RequestManager {
                 }
             }
 
-
             //INCORRECT HTTP VERSION
             if (!version.equals(Constants.HTTPVERSION)) {
                 return RequestHelper.badRequest();
             }
 
-            // TODO Test parameters if the content is longer than 3 parts.
-            // TODO We might have something invalid there and should sent a bad request response.
-
-
             switch (method) {
-                case HttpRequest.HTTP_METHOD.GET:
+                case HTTP_METHOD.GET:
                     return GetRequest.handle(argument);
-                case HttpRequest.HTTP_METHOD.HEAD:
+                case HTTP_METHOD.HEAD:
                     return HeadRequest.handle(argument);
-                case HttpRequest.HTTP_METHOD.POST:
+                case HTTP_METHOD.POST:
                     return RequestHelper.notImplemented();
-                case HttpRequest.HTTP_METHOD.PUT:
+                case HTTP_METHOD.PUT:
                     return RequestHelper.notImplemented();
-                case HttpRequest.HTTP_METHOD.DELETE:
+                case HTTP_METHOD.DELETE:
                     return RequestHelper.notImplemented();
-                case HttpRequest.HTTP_METHOD.LINK:
+                case HTTP_METHOD.LINK:
                     return RequestHelper.notImplemented();
-                case HttpRequest.HTTP_METHOD.UNLINK:
+                case HTTP_METHOD.UNLINK:
                     return RequestHelper.notImplemented();
                 default:
                     return RequestHelper.badRequest();

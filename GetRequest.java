@@ -7,7 +7,7 @@ public class GetRequest {
         StringBuilder b = new StringBuilder();
 
         if (!RequestHelper.existingFile(uri)) {
-            return b.append(RequestHelper.getHeader(STATUS_CODE.NOT_FOUND)).toString();
+            return b.append(RequestHelper.getHeader(STATUS_CODE.NOT_FOUND)).toString() + Constants.CRLF;
         }
 
         b.append(RequestHelper.getStandardHeaders(uri, false));

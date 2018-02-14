@@ -42,22 +42,13 @@ public final class WebServer {
 
 final class HttpRequest implements Runnable {
 
-    final static class HTTP_METHOD {
-        final static String GET = "GET";
-        final static String HEAD = "HEAD";
-        final static String POST = "POST";
-        final static String PUT = "PUT";
-        final static String DELETE = "DELETE";
-        final static String LINK = "LINK";
-        final static String UNLINK = "UNLINK";
-    }
 
-    final static String CRLF = "\r\n";
-    Socket socket;
+    private Socket socket;
 
     // Constructor
     public HttpRequest(Socket socket) throws Exception {
         this.socket = socket;
+        this.socket.setSoTimeout(10000);
     }
 
     // Implements the run() method of the Runnable interface
@@ -79,25 +70,32 @@ final class HttpRequest implements Runnable {
         BufferedReader br = new BufferedReader(new InputStreamReader(ins));
         
         // Get the request line of the HTTP request
+
         String requestLine = br.readLine();
 
-        // Display the request line
-        System.out.println();
-        System.out.println("Request:");
-        System.out.println("  " + requestLine);
         //Handles the response
         String result = RequestManager.handleRequest(requestLine);
-        System.out.println(result);
+
+
+        for (char c : result.toCharArray()) {
+            outs.write(c);
+        }
+        outs.flush();
 
         // Close streams and sockets
         outs.close();
         br.close();
-        socket.close();
+        if (!socket.isClosed()) {
+            socket.shutdownInput();
+            socket.shutdownOutput();
+            socket.close();
+        }
+        System.out.println("Closing down connection");
     }
 
     private static void sendBytes(FileInputStream fins,
                                   OutputStream outs) throws Exception {
-        // Coopy buffer
+        // Copy buffer
         byte[] buffer = new byte[1024];
         int bytes = 0;
 

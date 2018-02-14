@@ -15,7 +15,7 @@ public class RequestHelper {
         b.append(getLocation(uri));
         b.append(getServerInfo());
         b.append(getSupportedEntries());
-        b.append(getContentLength(isHead));
+        b.append(getContentLength(uri,isHead));
         b.append(getContentType(uri));
         b.append(getLastModified(uri));
 
@@ -24,7 +24,7 @@ public class RequestHelper {
 
     public static String getFileContent(String uri) {
         try {
-            return FileHandler.readFile(uri) + "\n";
+            return FileHandler.readFile(uri) + Constants.CRLF;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -32,30 +32,30 @@ public class RequestHelper {
     }
 
     public static String getLastModified(String uri) {
-        return "Last-Modified: on, " + FileHandler.lastModified(uri) + "\n";
+        return "Last-Modified: on, " + FileHandler.lastModified(uri) + Constants.CRLF;
     }
 
-    public static String getContentLength(boolean isHead) {
-        if (isHead) {
-            return "Content-Length: 0" + "\n";
+    public static String getContentLength(String uri,boolean isHead) {
+        if (isHead || uri.equals("/empty.txt")) {
+            return "Content-Length: 0" + Constants.CRLF;
         }
-        return "Content-Length: 402" + "\n";
+        return "Content-Length: 402" + Constants.CRLF;
     }
 
     public static String getContentType(String fileName) {
-        return "Content-Type: " + contentType(fileName) + "\n";
+        return "Content-Type: " + contentType(fileName) + Constants.CRLF;
     }
 
     public static String getSupportedEntries() {
-        return "Allow: " + SUPPORTED_METHODS+ "\n";
+        return "Allow: " + SUPPORTED_METHODS+ Constants.CRLF;
     }
 
     public static String getServerInfo() {
-        return "Server: " + WEB_SERVER + "\n";
+        return "Server: " + WEB_SERVER + Constants.CRLF;
     }
 
     public static String getLocation(String uri) {
-        return "Location: " + uri + "\n";
+        return "Location: " + uri + Constants.CRLF;
     }
 
     public static boolean existingFile(String file) {
@@ -63,12 +63,12 @@ public class RequestHelper {
     }
 
     public static String getHeader(STATUS_CODE status_code) {
-        return (Constants.HTTPVERSION + " ") + STATUS_CODE.toString(status_code) + "\n";
+        return (Constants.HTTPVERSION + " ") + STATUS_CODE.toString(status_code) + Constants.CRLF;
     }
 
 
     public static String notImplemented() {
-        return (Constants.HTTPVERSION + " ") + STATUS_CODE.toString(STATUS_CODE.NOT_IMPLEMENTED) + "\n" +
+        return (Constants.HTTPVERSION + " ") + STATUS_CODE.toString(STATUS_CODE.NOT_IMPLEMENTED) + Constants.CRLF +
                 getDate();
     }
 
@@ -76,12 +76,12 @@ public class RequestHelper {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EE MMM d H:m:s z y");
         ZonedDateTime d = ZonedDateTime.now();
         String s = d.format(formatter);
-        return "Date: " + s + "\n";
+        return "Date: " + s + Constants.CRLF;
     }
 
     public static String badRequest() {
         StringBuilder b = new StringBuilder();
-        b.append(Constants.HTTPVERSION + " ").append(STATUS_CODE.toString(STATUS_CODE.BAD_REQUEST)).append("\n");
+        b.append(Constants.HTTPVERSION + " ").append(STATUS_CODE.toString(STATUS_CODE.BAD_REQUEST)).append(Constants.CRLF);
         b.append(getDate());
         return b.toString();
     }

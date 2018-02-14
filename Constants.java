@@ -3,5 +3,5 @@
  */
 public class Constants {
     final static String HTTPVERSION = "HTTP/1.0";
-
+    final static String CRLF = "\r\n";
 }
