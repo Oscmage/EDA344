@@ -78,7 +78,9 @@ final class HttpRequest implements Runnable {
 
     final static int MIN_VALID_PARTS = 3;
     final static String HTTPVERSION = "HTTP/1.0";
+    final static String WEB_SERVER = "WebServer/1.0";
     final static String CRLF = "\r\n";
+    final static String SUPPORTED_METHODS = "GET, HEAD";
     Socket socket;
 
     // Constructor
@@ -174,7 +176,7 @@ final class HttpRequest implements Runnable {
         b.append(getDate());
         b.append(getLocation(uri));
         b.append(getServerInfo());
-        b.append(getAvailableEntries());
+        b.append(getSupportedEntries());
         b.append(getContentLength());
         b.append(getContentType(uri));
         b.append(getLastModified(uri));
@@ -183,13 +185,41 @@ final class HttpRequest implements Runnable {
         return b.toString();
     }
 
+    private static String getFileContent(String uri) {
+        try {
+            return FileHandler.readFile(uri) + "\n";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private static String getLastModified(String uri) {
+        return "Last-Modified: on, " + FileHandler.lastModified(uri) + "\n";
+    }
+
+    private static String getContentLength() {
+        return "Content-Length: 402" + "\n";
+    }
+
+    private static String getContentType(String fileName) {
+        return "Content-Type: " + contentType(fileName) + "\n";
+    }
+
+    private static String getSupportedEntries() {
+        return "Allow: " + SUPPORTED_METHODS+ "\n";
+    }
+
+    private static String getServerInfo() {
+        return "Server: " + WEB_SERVER + "\n";
+    }
+
     private static String getLocation(String uri) {
         return "Location: " + uri + "\n";
     }
 
     private static boolean existingFile(String file) {
-        //TODO
-        return true;
+        return FileHandler.fileExists(file);
     }
 
     private static String getHeader(HTTP_STATUS_CODE status_code) {
@@ -230,9 +260,7 @@ final class HttpRequest implements Runnable {
         }
     }
 
-    private static String getContentType(String fileName) {
-        return "Content-Type: " + contentType(fileName) + "\n";
-    }
+
 
     private static String contentType(String fileName) {
         if (fileName.toLowerCase().endsWith(".htm") ||
