@@ -49,6 +49,10 @@ final class HttpRequest implements Runnable {
         final static String GET = "GET";
         final static String HEAD = "HEAD";
         final static String POST = "POST";
+        final static String PUT = "PUT";
+        final static String DELETE = "DELETE";
+        final static String LINK = "LINK";
+        final static String UNLINK = "UNLINK";
     }
 
 
@@ -125,46 +129,93 @@ final class HttpRequest implements Runnable {
             return badRequest();
         }
 
+
         String method = spaces[0];
         String argument = spaces[1];
         String version = spaces[2];
+
+        //INCORRECT HTTP VERSION
+        if (!version.equals(HTTPVERSION)) {
+            return badRequest();
+        }
+
+        // TODO Test parameters if the content is longer than 3 parts.
+        // TODO We might have something invalid there and should sent a bad request response.
+
+
         switch (method) {
             case HTTP_METHOD.GET:
-                return handleGet(argument, version);
+                return handleGet(argument);
             case HTTP_METHOD.HEAD:
-                return handleHead(argument, version);
+                return handleHead(argument);
             case HTTP_METHOD.POST:
-                return handlePost();
+                return notImplemented();
+            case HTTP_METHOD.PUT:
+                return notImplemented();
+            case HTTP_METHOD.DELETE:
+                return notImplemented();
+            case HTTP_METHOD.LINK:
+                return notImplemented();
+            case HTTP_METHOD.UNLINK:
+                return notImplemented();
             default:
                 return badRequest();
         }
     }
 
-    private static String handleGet(String argument, String version) {
+    private static String handleGet(String uri) {
+        StringBuilder b = new StringBuilder();
+
+        if (!existingFile(uri)) {
+            return b.append(getHeader(HTTP_STATUS_CODE.NOT_FOUND)).toString();
+        }
+
+        b.append(getHeader(HTTP_STATUS_CODE.OK));
+        b.append(getDate());
+        b.append(getLocation(uri));
+        b.append(getServerInfo());
+        b.append(getAvailableEntries());
+        b.append(getContentLength());
+        b.append(getContentType(uri));
+        b.append(getLastModified(uri));
+        b.append(getFileContent(uri));
+
+        return b.toString();
+    }
+
+    private static String getLocation(String uri) {
+        return "Location: " + uri + "\n";
+    }
+
+    private static boolean existingFile(String file) {
+        //TODO
+        return true;
+    }
+
+    private static String getHeader(HTTP_STATUS_CODE status_code) {
+        return (HTTPVERSION + " ") + HTTP_STATUS_CODE.toString(status_code) + "\n";
+    }
+
+    private static String handleHead(String argument) {
         return "";
     }
 
-    private static String handleHead(String argument, String version) {
-        return "";
-    }
-
-    private static String handlePost() {
+    private static String notImplemented() {
         return (HTTPVERSION + " ") + HTTP_STATUS_CODE.toString(HTTP_STATUS_CODE.NOT_IMPLEMENTED) + "\n" +
-                displayDate();
+                getDate();
     }
 
-    private static String displayDate() {
-        // s z y
+    private static String getDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EE MMM d H:m:s z y");
         ZonedDateTime d = ZonedDateTime.now();
         String s = d.format(formatter);
-        return "Date: " + s;
+        return "Date: " + s + "\n";
     }
 
     private static String badRequest() {
         StringBuilder b = new StringBuilder();
         b.append(HTTPVERSION + " ").append(HTTP_STATUS_CODE.toString(HTTP_STATUS_CODE.BAD_REQUEST)).append("\n");
-        b.append(displayDate());
+        b.append(getDate());
         return b.toString();
     }
 
@@ -177,6 +228,10 @@ final class HttpRequest implements Runnable {
         while ((bytes = fins.read(buffer)) != -1) {
             outs.write(buffer, 0, bytes);
         }
+    }
+
+    private static String getContentType(String fileName) {
+        return "Content-Type: " + contentType(fileName) + "\n";
     }
 
     private static String contentType(String fileName) {
