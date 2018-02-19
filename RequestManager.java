@@ -16,6 +16,7 @@ public class RequestManager {
             String version = spaces[2];
 
 
+
             if (spaces.length == HEADER_WITH_USER_AGENT) {
                 String userAgent = spaces[3];
                 if (!userAgent.equals(USER_AGENT)) {
@@ -25,6 +26,11 @@ public class RequestManager {
 
             //INCORRECT HTTP VERSION
             if (!version.equals(Constants.HTTPVERSION)) {
+                return RequestHelper.badRequest();
+            }
+
+            // Argument (file) to look for requires a '/' in the start otherwise it is invalid
+            if (argument.length() < 1 || argument.charAt(0) != '/') {
                 return RequestHelper.badRequest();
             }
 
