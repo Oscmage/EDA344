@@ -15,8 +15,6 @@ public class RequestManager {
             String argument = spaces[1];
             String version = spaces[2];
 
-
-
             if (spaces.length == HEADER_WITH_USER_AGENT) {
                 String userAgent = spaces[3];
                 if (!userAgent.equals(USER_AGENT)) {

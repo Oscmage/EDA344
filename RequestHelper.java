@@ -35,9 +35,15 @@ public class RequestHelper {
         return "Last-Modified: on, " + FileHandler.lastModified(uri) + Constants.CRLF;
     }
 
-    public static String getContentLength(String uri,boolean isHead) {
+    public static String getContentLength(String uri, boolean isHead) {
         if (isHead || uri.equals("/empty.txt")) {
             return "Content-Length: 0" + Constants.CRLF;
+        } else if (uri.equals("/pic.png")) {
+            return "Content-Length: 980" + Constants.CRLF;
+        } else if (uri.equals("/pic.gif")) {
+            return "Content-Length: 934" + Constants.CRLF;
+        } else if (uri.equals("/pic.jpg")) {
+            return "Content-Length: 1059" + Constants.CRLF;
         }
         return "Content-Length: 402" + Constants.CRLF;
     }
